@@ -15,6 +15,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -41,11 +43,18 @@ public class RedServidor {
             byte[] mensaje;
             try{
                 mensaje = recibirMensaje();
-                Termino termino = diccionario.buscarTermino(new String(mensaje));
-                byte[] respuesta = new String(termino.getDescription()).getBytes();
-                enviarMensaje(respuesta, destinatarioIp, destinatarioPuerto);
+                JSONObject mensajeJson = new JSONObject(new String(mensaje));
+                if(mensajeJson.get("action").equals("create")){
+                    Termino termino = new Termino(mensajeJson.get("name").toString(), mensajeJson.get("description").toString());
+                }
+
+//                Termino termino = diccionario.buscarTermino(new String(mensaje));
+//                byte[] respuesta = new String(termino.getDescription()).getBytes();
+//                enviarMensaje(respuesta, destinatarioIp, destinatarioPuerto);
             }catch(IOException ex){
                Logger.getLogger(RedServidor.class.getName()).log(Level.SEVERE, null, ex);
+            }catch (JSONException ex) {
+                Logger.getLogger(RedServidor.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
     }
